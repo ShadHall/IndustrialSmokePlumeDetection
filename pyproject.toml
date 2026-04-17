@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "industrial-smoke-plume-detection"
+version = "0.1.0"
+description = "Industrial smoke plume detection and segmentation from Sentinel-2 imagery"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.20",
+    "matplotlib>=3.5",
+    "rasterio>=1.3",
+    "scikit-learn>=1.0",
+    "tensorboard>=2.10",
+    "torch>=1.13",
+    "torchvision>=0.14",
+    "tqdm>=4.60",
+    "shapely>=2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

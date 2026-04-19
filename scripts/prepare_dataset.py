@@ -132,7 +132,6 @@ def main() -> int:
     n = len(site_ids)
     n_train = int(round(tr * n))
     n_val = int(round(vr * n))
-    n_test = n - n_train - n_val
     train_sites = set(site_ids[:n_train])
     val_sites = set(site_ids[n_train : n_train + n_val])
     test_sites = set(site_ids[n_train + n_val :])

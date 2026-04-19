@@ -1,9 +1,12 @@
+> **LEGACY DOCUMENT — preserved for reference.** Slide outline for the
+> original 12-channel model. Retained only for historical/reference use.
+
 # Google Slides Content Outline - Industrial Smoke Plume Detection Architecture
 
 ## Slide 1 - Title
 
-**Title:** Industrial Smoke Plume Detection from Sentinel-2  
-**Subtitle:** Architecture of Classification + Segmentation Models  
+**Title:** Industrial Smoke Plume Detection from Sentinel-2
+**Subtitle:** Architecture of Classification + Segmentation Models
 **Presenter fields:** Name, affiliation, date
 
 **Speaker notes (optional):**

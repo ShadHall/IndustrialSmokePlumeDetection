@@ -1,3 +1,8 @@
+> **LEGACY DOCUMENT — preserved for reference.** This describes the original
+> 12-channel (Sentinel-2 bands 1–10, 12, 13) model from the NeurIPS 2020
+> paper. The current repository ships a 4-channel (B2, B3, B4, B8) pipeline.
+> See `docs/MODEL_ARCHITECTURE.md` for the current architecture.
+
 # Industrial Smoke Plume Detection - Model Architecture
 
 ## Overview

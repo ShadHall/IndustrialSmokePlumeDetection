@@ -1,91 +1,130 @@
 # Industrial Smoke Plume Detection
 
-This repository contains the code base for our publication *Characterization of Industrial Smoke Plumes from
-Remote Sensing Data*, presented at the *Tackling Climate Change with Machine
- Learning* workshop at NeurIPS 2020.
+This repository implements a two-stage PyTorch Lightning pipeline for detecting
+and segmenting industrial smoke plumes from Sentinel-2 multispectral satellite
+imagery (4 channels: B2, B3, B4, B8).
 
+Based on the publication *Characterization of Industrial Smoke Plumes from
+Remote Sensing Data*, NeurIPS 2020 *Tackling Climate Change with Machine
+Learning* workshop.
 
 ![segmentation example images](assets/segmentation.png "Segmentation Example Images")
 
- 
-## About this Project
+## Project Structure
 
-The major driver of global warming has been identified as the anthropogenic release
-of greenhouse gas (GHG) emissions from industrial activities. The quantitative
-monitoring of these emissions is mandatory to fully understand their effect on the
-Earth’s climate and to enforce emission regulations on a large scale. In this work,
-we investigate the possibility to detect and quantify industrial smoke plumes from
-globally and freely available multiband image data from ESA’s Sentinel-2 satellites.
-Using a modified ResNet-50, we can detect smoke plumes of different sizes with
-an accuracy of 94.3%. The model correctly ignores natural clouds and focuses on
-those imaging channels that are related to the spectral absorption from aerosols and
-water vapor, enabling the localization of smoke. We exploit this localization ability
-and train a U-Net segmentation model on a labeled subsample of our data, resulting
-in an Intersection-over-Union (IoU) metric of 0.608 and an overall accuracy for
-the detection of any smoke plume of 94.0%; on average, our model can reproduce
-the area covered by smoke in an image to within 5.6%. The performance of our
-model is mostly limited by occasional confusion with surface objects, the inability
-to identify semi-transparent smoke, and human limitations to properly identify
-smoke based on RGB-only images. Nevertheless, our results enable us to reliably
-detect and qualitatively estimate the level of smoke activity in order to monitor
-activity in industrial plants across the globe. Our data set and code base are publicly
-available.
+```
+configs/                 experiment YAMLs
+data/                    prepared dataset (gitignored)
+docs/                    architecture + legacy docs
+notebooks/               exploratory notebooks
+scripts/                 dataset preparation + smoke tests
+src/smoke_detection/
+  common/                seed, paths, logging
+  data/                  Datasets + LightningDataModules + transforms
+  models/                pure nn.Module definitions (ResNet-50, U-Net)
+  training/              LightningModules (loss, optimizer, metrics, steps)
+  evaluation/            plotting helpers (confusion matrix, ROC, IoU hist)
+  configs/               pydantic schemas + YAML loader
+  cli/                   train.py, eval.py entry points
+tests/                   pytest scaffolding
+```
 
-The full publication is available on arxiv.
+## Installation
 
-The data set is available on [zenodo](http://doi.org/10.5281/zenodo.4250706).
+Requires Python >= 3.11 (3.12 recommended; see `.python-version`) and
+[`uv`](https://github.com/astral-sh/uv).
 
-## Content
+    uv sync --extra dev
 
-`classification/`: 4-channel ResNet-50 classifier code, training and evaluation routines
-`segmentation/`: 4-channel U-Net segmentation model code, training and evaluation routines
-`deprecated/`: Original 12-channel model scripts (kept for reference)
-`docs/`: Architecture documentation and slides outline
-`assets/`: Example images
-`scripts/`: Dataset preparation utilities
+Or from pip/venv:
 
- 
-## How to Use
+    pip install -e ".[dev]"
 
-**1. Install the package**
+## Data Preparation
 
-    pip install -e .
+1. Download the dataset from [Zenodo](http://doi.org/10.5281/zenodo.4250706)
+   and extract it (you should have a `4250706/` directory containing
+   `images/` and `segmentation_labels/`).
+2. Generate train/val/test splits into the default `data/` location:
 
-**2. Download and prepare the data**
+```bash
+python scripts/prepare_dataset.py --source /path/to/4250706 --output data
+```
 
-Download the [dataset](http://doi.org/10.5281/zenodo.4250706) and decompress
-it. Run the preparation script to create train/val/test splits:
+Override the default root via `SMOKEDET_DATA_ROOT=/some/path`.
 
-    python scripts/prepare_dataset.py --source /path/to/4250706 --output ../dataset_prepared
+The expected layout after preparation:
 
-By default, the code expects `dataset_prepared/` to be a sibling of this
-repository. Override with the `SMOKEDET_DATA_ROOT` environment variable if
-your data lives elsewhere.
+```
+data/
+  classification/{train,val,test}/{positive,negative}/*.tif
+  segmentation/{train,val,test}/images/{positive,negative}/*.tif
+  segmentation/{train,val,test}/labels/*.json
+```
 
-**3. Train a model**
+## Training
 
-    python -m smoke_detection.classification.train
-    python -m smoke_detection.segmentation.train
+All training goes through a single CLI, parameterized by YAML config:
 
-Optional arguments:
+```bash
+# Classification
+python -m smoke_detection.cli.train --config configs/classification/default.yaml
 
-* `-bs <int>` batch size
-* `-ep <int>` number of training epochs
-* `-lr <float>` starting learning rate
-* `-mo <float>` momentum
+# Segmentation
+python -m smoke_detection.cli.train --config configs/segmentation/default.yaml
 
-**4. Evaluate**
+# Override any config field via dotted overrides
+python -m smoke_detection.cli.train \
+    --config configs/classification/default.yaml \
+    --override optim.lr=1e-3 \
+    --override trainer.max_epochs=10
+```
 
-    python -m smoke_detection.classification.eval
-    python -m smoke_detection.segmentation.eval
- 
- 
-## Acknowledgements
+Or via `make`:
 
-If you use this code for your own project, please cite the following
-conference contribution:
+```bash
+make train-cls        # classification
+make train-seg        # segmentation
+```
+
+Logs, checkpoints, and TensorBoard events land in
+`lightning_logs/<experiment_name>/version_N/`.
+
+## Evaluation
+
+```bash
+python -m smoke_detection.cli.eval \
+    --config configs/segmentation/default.yaml \
+    --ckpt lightning_logs/segmentation_4ch_unet/version_0/checkpoints/last.ckpt
+```
+
+The eval CLI writes confusion matrix + ROC plots (classification) or IoU +
+area-ratio histograms (segmentation) into
+`lightning_logs/<experiment_name>/eval/`.
+
+## Dev Loop
+
+```bash
+make install          # uv sync --extra dev
+make lint             # ruff check + ruff format --check
+make format           # auto-fix
+make test             # pytest
+make clean
+```
+
+Pre-commit hooks:
+
+```bash
+uv run pre-commit install
+```
+
+## Citation
 
     Mommert, M., Sigel, M., Neuhausler, M., Scheibenreif, L., Borth, D.,
     "Characterization of Industrial Smoke Plumes from Remote Sensing Data",
-    Tackling Climate Change with Machine Learning Workshop,
-    NeurIPS 2020.
+    Tackling Climate Change with Machine Learning Workshop, NeurIPS 2020.
+
+## License
+
+GPL v3 — see `LICENSE`. U-Net code adapted from
+[milesial/Pytorch-UNet](https://github.com/milesial/Pytorch-UNet) (GPL v3).

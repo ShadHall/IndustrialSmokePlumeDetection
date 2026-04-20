@@ -110,3 +110,61 @@ def cached_resnet50_weights():
 
     _ = resnet50(weights=ResNet50_Weights.IMAGENET1K_V1)
     return ResNet50_Weights.IMAGENET1K_V1
+
+
+@pytest.fixture
+def sample_classification_config(synthetic_dataset_root: Path, tmp_path: Path):
+    from smoke_detection.configs.classification import ClassificationConfig
+
+    return ClassificationConfig.model_validate(
+        {
+            "task": "classification",
+            "seed": 1234,
+            "trainer": {
+                "max_epochs": 1,
+                "accelerator": "cpu",
+                "devices": 1,
+                "precision": "32",
+                "deterministic": True,
+                "log_every_n_steps": 1,
+                "fast_dev_run": True,
+            },
+            "paths": {
+                "data_root": str(synthetic_dataset_root),
+                "output_dir": str(tmp_path / "lightning_logs"),
+                "experiment_name": "test_classification",
+            },
+            "optim": {"lr": 1e-3, "momentum": 0.9, "weight_decay": 0.0, "scheduler": "none"},
+            "model": {"backbone": "resnet50", "pretrained": False, "in_channels": 4},
+            "data": {"batch_size": 2, "num_workers": 0, "crop_size": 90, "balance": "none"},
+        }
+    )
+
+
+@pytest.fixture
+def sample_segmentation_config(synthetic_dataset_root: Path, tmp_path: Path):
+    from smoke_detection.configs.segmentation import SegmentationConfig
+
+    return SegmentationConfig.model_validate(
+        {
+            "task": "segmentation",
+            "seed": 1234,
+            "trainer": {
+                "max_epochs": 1,
+                "accelerator": "cpu",
+                "devices": 1,
+                "precision": "32",
+                "deterministic": True,
+                "log_every_n_steps": 1,
+                "fast_dev_run": True,
+            },
+            "paths": {
+                "data_root": str(synthetic_dataset_root),
+                "output_dir": str(tmp_path / "lightning_logs"),
+                "experiment_name": "test_segmentation",
+            },
+            "optim": {"lr": 1e-3, "momentum": 0.9, "weight_decay": 0.0, "scheduler": "none"},
+            "model": {"architecture": "unet", "in_channels": 4, "n_classes": 1, "bilinear": True},
+            "data": {"batch_size": 2, "num_workers": 0, "crop_size": 90},
+        }
+    )

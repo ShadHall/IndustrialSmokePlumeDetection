@@ -46,7 +46,13 @@ jobs:
       - name: Pytest (fast tier)
         run: uv run pytest -m "not slow and not e2e and not gpu"
       - name: Pytest (slow tier + coverage gate)
-        run: uv run pytest -m "slow" --cov-append --cov-fail-under=80
+        run: uv run pytest -m "slow" --cov-append --cov-fail-under=80 --cov-report=xml
+      - name: Upload coverage to Codecov
+        if: matrix.python == '3.12'
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+          fail_ci_if_error: false
 
   e2e:
     runs-on: ubuntu-latest

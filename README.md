@@ -1,5 +1,9 @@
 # Industrial Smoke Plume Detection
 
+[![CI](https://github.com/ShadHall/IndustrialSmokePlumeDetection/actions/workflows/ci.yml/badge.svg)](https://github.com/ShadHall/IndustrialSmokePlumeDetection/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ShadHall/IndustrialSmokePlumeDetection/branch/master/graph/badge.svg)](https://codecov.io/gh/ShadHall/IndustrialSmokePlumeDetection)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
+
 This repository implements a two-stage PyTorch Lightning pipeline for detecting
 and segmenting industrial smoke plumes from Sentinel-2 multispectral satellite
 imagery (4 channels: B2, B3, B4, B8).

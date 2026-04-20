@@ -37,10 +37,22 @@ Thanks for your interest in contributing.
 
 ## Tests
 
-- Use `pytest`. Tests live under `tests/`.
-- Run: `make test` or `uv run pytest`.
-- The test suite currently contains scaffolding only. Add real tests as
-  behavior is stabilized.
+- Framework: `pytest`. Tests live under `tests/`.
+- Marker tiers:
+  - **default** (unmarked) — fast unit + integration; CPU; < 60s on a cold runner.
+  - **`slow`** — pretrained ResNet-50 load, overfitting sanity loops.
+  - **`gpu`** — requires CUDA; auto-skipped when unavailable.
+  - **`e2e`** — CLI end-to-end, fast_dev_run, checkpoint round-trip.
+- Make targets:
+  - `make test` — default + slow tiers with an 80% coverage gate.
+  - `make test-e2e` — e2e tier only.
+  - `make test-gpu` — gpu tier only.
+  - `make test-all` — everything except `gpu`.
+- Pretrained weights are cached under `~/.cache/torch/hub/checkpoints/`. In CI
+  they're restored by `actions/cache` keyed on `resnet50-imagenet-v1`. Bump
+  the key if the torchvision weights URL changes upstream.
+- Tests never hit the network. Synthetic data is generated on the fly by
+  `tests/_data.py`.
 
 ## Commit Messages
 

@@ -38,7 +38,7 @@ def _eval_classification(cfg: ClassificationConfig, ckpt: Path, out_dir: Path) -
         crop_size=cfg.data.crop_size,
         balance="none",
     )
-    module = ClassificationModule.load_from_checkpoint(str(ckpt))
+    module = ClassificationModule.load_from_checkpoint(str(ckpt), weights_only=False)
     trainer = Trainer(accelerator=cfg.trainer.accelerator, devices=cfg.trainer.devices)
     trainer.test(module, datamodule=dm)
 
@@ -78,7 +78,7 @@ def _eval_segmentation(cfg: SegmentationConfig, ckpt: Path, out_dir: Path) -> No
         num_workers=cfg.data.num_workers,
         crop_size=cfg.data.crop_size,
     )
-    module = SegmentationModule.load_from_checkpoint(str(ckpt))
+    module = SegmentationModule.load_from_checkpoint(str(ckpt), weights_only=False)
     trainer = Trainer(accelerator=cfg.trainer.accelerator, devices=cfg.trainer.devices)
     trainer.test(module, datamodule=dm)
 

@@ -168,3 +168,21 @@ def sample_segmentation_config(synthetic_dataset_root: Path, tmp_path: Path):
             "data": {"batch_size": 2, "num_workers": 0, "crop_size": 90},
         }
     )
+
+
+@pytest.fixture
+def classification_yaml_tmp(sample_classification_config, tmp_path):
+    import yaml
+
+    p = tmp_path / "cls.yaml"
+    p.write_text(yaml.safe_dump(sample_classification_config.model_dump(mode="json")))
+    return p
+
+
+@pytest.fixture
+def segmentation_yaml_tmp(sample_segmentation_config, tmp_path):
+    import yaml
+
+    p = tmp_path / "seg.yaml"
+    p.write_text(yaml.safe_dump(sample_segmentation_config.model_dump(mode="json")))
+    return p

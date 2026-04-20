@@ -18,6 +18,7 @@ from smoke_detection.configs.segmentation import SegmentationConfig
 from smoke_detection.data.classification_datamodule import ClassificationDataModule
 from smoke_detection.data.segmentation_datamodule import SegmentationDataModule
 from smoke_detection.training.classification_module import ClassificationModule
+from smoke_detection.training.figures_callback import TrainingFiguresCallback
 from smoke_detection.training.segmentation_module import SegmentationModule
 
 log = get_logger(__name__)
@@ -77,6 +78,7 @@ def _build_trainer(cfg: BaseConfig, monitor: str) -> L.Trainer:
         auto_insert_metric_name=False,
     )
     lr_cb = LearningRateMonitor(logging_interval="epoch")
+    figures_cb = TrainingFiguresCallback()
     return L.Trainer(
         max_epochs=cfg.trainer.max_epochs,
         accelerator=cfg.trainer.accelerator,
@@ -88,7 +90,7 @@ def _build_trainer(cfg: BaseConfig, monitor: str) -> L.Trainer:
         fast_dev_run=cfg.trainer.fast_dev_run,
         default_root_dir=str(cfg.paths.output_dir),
         logger=logger,
-        callbacks=[checkpoint_cb, lr_cb],
+        callbacks=[checkpoint_cb, lr_cb, figures_cb],
     )
 
 

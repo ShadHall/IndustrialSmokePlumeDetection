@@ -48,34 +48,40 @@ class SegmentationModule(L.LightningModule):
 
     def training_step(self, batch: dict[str, Any], batch_idx: int) -> torch.Tensor:
         loss, logits, y = self._shared_step(batch)
+        bs = batch["img"].shape[0]
         preds = (logits >= 0).int()
         self.train_iou.update(preds, y.int())
-        self.log("train/loss", loss, prog_bar=True, on_step=True, on_epoch=True)
-        self.log("train/iou", self.train_iou, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("train/loss", loss, prog_bar=True, on_step=True, on_epoch=True, batch_size=bs)
+        self.log(
+            "train/iou", self.train_iou, on_step=False, on_epoch=True, prog_bar=True, batch_size=bs
+        )
         return loss
 
     def validation_step(self, batch: dict[str, Any], batch_idx: int) -> torch.Tensor:
         loss, logits, y = self._shared_step(batch)
+        bs = batch["img"].shape[0]
         preds = (logits >= 0).int()
         self.val_iou.update(preds, y.int())
-        # Image-level presence (per image: any predicted mask vs. any true mask).
         image_pred = (preds.sum(dim=(1, 2, 3)) > 0).int()
         image_true = (y.sum(dim=(1, 2, 3)) > 0).int()
         self.val_acc.update(image_pred, image_true)
-        self.log("val/loss", loss, prog_bar=True, on_step=False, on_epoch=True)
-        self.log("val/iou", self.val_iou, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val/img_acc", self.val_acc, on_step=False, on_epoch=True)
+        self.log("val/loss", loss, prog_bar=True, on_step=False, on_epoch=True, batch_size=bs)
+        self.log(
+            "val/iou", self.val_iou, on_step=False, on_epoch=True, prog_bar=True, batch_size=bs
+        )
+        self.log("val/img_acc", self.val_acc, on_step=False, on_epoch=True, batch_size=bs)
         return loss
 
     def test_step(self, batch: dict[str, Any], batch_idx: int) -> None:
         _, logits, y = self._shared_step(batch)
+        bs = batch["img"].shape[0]
         preds = (logits >= 0).int()
         self.test_iou.update(preds, y.int())
         image_pred = (preds.sum(dim=(1, 2, 3)) > 0).int()
         image_true = (y.sum(dim=(1, 2, 3)) > 0).int()
         self.test_acc.update(image_pred, image_true)
-        self.log("test/iou", self.test_iou, on_step=False, on_epoch=True)
-        self.log("test/img_acc", self.test_acc, on_step=False, on_epoch=True)
+        self.log("test/iou", self.test_iou, on_step=False, on_epoch=True, batch_size=bs)
+        self.log("test/img_acc", self.test_acc, on_step=False, on_epoch=True, batch_size=bs)
 
     def configure_optimizers(self):
         opt = optim.SGD(

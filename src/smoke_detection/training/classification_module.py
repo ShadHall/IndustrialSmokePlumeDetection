@@ -47,28 +47,35 @@ class ClassificationModule(L.LightningModule):
 
     def training_step(self, batch: dict[str, Any], batch_idx: int) -> torch.Tensor:
         loss, logits, y = self._shared_step(batch)
+        bs = batch["img"].shape[0]
         self.train_acc.update(torch.sigmoid(logits).squeeze(1), y.squeeze(1).int())
-        self.log("train/loss", loss, prog_bar=True, on_step=True, on_epoch=True)
-        self.log("train/acc", self.train_acc, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("train/loss", loss, prog_bar=True, on_step=True, on_epoch=True, batch_size=bs)
+        self.log(
+            "train/acc", self.train_acc, on_step=False, on_epoch=True, prog_bar=True, batch_size=bs
+        )
         return loss
 
     def validation_step(self, batch: dict[str, Any], batch_idx: int) -> torch.Tensor:
         loss, logits, y = self._shared_step(batch)
+        bs = batch["img"].shape[0]
         probs = torch.sigmoid(logits).squeeze(1)
         self.val_acc.update(probs, y.squeeze(1).int())
         self.val_auc.update(probs, y.squeeze(1).int())
-        self.log("val/loss", loss, prog_bar=True, on_step=False, on_epoch=True)
-        self.log("val/acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val/auc", self.val_auc, on_step=False, on_epoch=True)
+        self.log("val/loss", loss, prog_bar=True, on_step=False, on_epoch=True, batch_size=bs)
+        self.log(
+            "val/acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True, batch_size=bs
+        )
+        self.log("val/auc", self.val_auc, on_step=False, on_epoch=True, batch_size=bs)
         return loss
 
     def test_step(self, batch: dict[str, Any], batch_idx: int) -> None:
         _, logits, y = self._shared_step(batch)
+        bs = batch["img"].shape[0]
         probs = torch.sigmoid(logits).squeeze(1)
         self.test_acc.update(probs, y.squeeze(1).int())
         self.test_auc.update(probs, y.squeeze(1).int())
-        self.log("test/acc", self.test_acc, on_step=False, on_epoch=True)
-        self.log("test/auc", self.test_auc, on_step=False, on_epoch=True)
+        self.log("test/acc", self.test_acc, on_step=False, on_epoch=True, batch_size=bs)
+        self.log("test/auc", self.test_auc, on_step=False, on_epoch=True, batch_size=bs)
 
     def configure_optimizers(self):
         opt = optim.SGD(

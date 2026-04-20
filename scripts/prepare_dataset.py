@@ -66,7 +66,7 @@ def main() -> int:
     )
     p.add_argument(
         "--output",
-        default=os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..", "dataset_prepared")),
+        default=os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "data")),
         help="Output root for prepared splits",
     )
     p.add_argument("--train-ratio", type=float, default=0.70)
@@ -91,7 +91,11 @@ def main() -> int:
     src_neg = os.path.join(args.source, "images", "negative")
     src_lbl = os.path.join(args.source, "segmentation_labels")
 
-    for path, label in [(src_pos, "positive images"), (src_neg, "negative images"), (src_lbl, "segmentation_labels")]:
+    for path, label in [
+        (src_pos, "positive images"),
+        (src_neg, "negative images"),
+        (src_lbl, "segmentation_labels"),
+    ]:
         if not os.path.isdir(path):
             print(f"Missing {label} directory: {path}", file=sys.stderr)
             return 1
@@ -128,7 +132,6 @@ def main() -> int:
     n = len(site_ids)
     n_train = int(round(tr * n))
     n_val = int(round(vr * n))
-    n_test = n - n_train - n_val
     train_sites = set(site_ids[:n_train])
     val_sites = set(site_ids[n_train : n_train + n_val])
     test_sites = set(site_ids[n_train + n_val :])
@@ -154,8 +157,12 @@ def main() -> int:
     for sid, entries in site_files.items():
         sp = split_for_site[sid]
         for cls, fn, src in entries:
-            planned.append((src, os.path.join(out_class_dir(sp, cls), fn), f"classification/{sp}/{cls}"))
-            planned.append((src, os.path.join(out_seg_img(sp, cls), fn), f"segmentation/{sp}/images/{cls}"))
+            planned.append(
+                (src, os.path.join(out_class_dir(sp, cls), fn), f"classification/{sp}/{cls}")
+            )
+            planned.append(
+                (src, os.path.join(out_seg_img(sp, cls), fn), f"segmentation/{sp}/images/{cls}")
+            )
 
     for sid, jfns in site_labels.items():
         sp = split_for_site[sid]
@@ -199,7 +206,7 @@ def main() -> int:
             print(f"  ... and {len(missing) - 10} more", file=sys.stderr)
 
     print(f"Done. Output: {args.output}")
-    print("Use dataset_paths.py (DATASET_ROOT) from the training scripts.")
+    print("Use smoke_detection.common.paths.DATASET_ROOT from training code.")
     return 0
 
 

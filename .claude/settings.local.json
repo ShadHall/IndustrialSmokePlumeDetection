@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import tomllib; tomllib.loads\\(open\\('pyproject.toml','rb'\\).read\\(\\).decode\\('utf-8'\\)\\); print\\('toml valid'\\)\")",
+      "Bash(uv run *)",
+      "Bash(uv pip *)",
+      "Bash(uv *)",
+      "Bash(nvidia-smi)",
+      "Bash(git check-ignore *)",
+      "Bash(make test *)",
+      "Bash(echo \"EXIT=$?\")",
+      "Read(//tmp/**)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}

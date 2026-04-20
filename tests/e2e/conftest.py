@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 import yaml
-from smoke_detection.configs.classification import ClassificationConfig
-from smoke_detection.configs.segmentation import SegmentationConfig
+
+if TYPE_CHECKING:
+    from smoke_detection.configs.classification import ClassificationConfig
+    from smoke_detection.configs.segmentation import SegmentationConfig
 
 
 def _dump_config(cfg, path: Path) -> Path:

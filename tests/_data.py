@@ -34,6 +34,7 @@ def _write_tif(path: Path, rng: np.random.Generator) -> None:
         "count": TIF_COUNT,
         "dtype": "uint16",
         "transform": from_origin(0, 0, 1, 1),
+        "crs": "EPSG:4326",
     }
     with rio.open(path, "w", **profile) as dst:
         dst.write(data)

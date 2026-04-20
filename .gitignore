@@ -166,3 +166,5 @@ data/*
 # --- Notebook outputs ---
 notebooks/*
 !notebooks/.gitkeep
+# Added by code-review-graph
+.code-review-graph/

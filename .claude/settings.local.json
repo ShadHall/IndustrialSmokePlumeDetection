@@ -13,5 +13,9 @@
       "Bash(git add *)",
       "Bash(git commit *)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "code-review-graph"
+  ],
+  "enableAllProjectMcpServers": true
 }

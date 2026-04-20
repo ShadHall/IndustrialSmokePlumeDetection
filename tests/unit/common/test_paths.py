@@ -6,6 +6,7 @@ import importlib
 from pathlib import Path
 
 import pytest
+
 from smoke_detection.common import paths as paths_module
 
 

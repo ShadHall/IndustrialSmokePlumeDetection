@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import torch
+
 from smoke_detection.data.classification_datamodule import ClassificationDataModule
 from smoke_detection.data.segmentation_datamodule import SegmentationDataModule
 from smoke_detection.training.classification_module import ClassificationModule

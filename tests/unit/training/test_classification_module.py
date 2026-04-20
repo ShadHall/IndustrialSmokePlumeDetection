@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import pytest
 import torch
-from smoke_detection.training.classification_module import ClassificationModule
 from torch.optim.lr_scheduler import CosineAnnealingLR, ReduceLROnPlateau
+
+from smoke_detection.training.classification_module import ClassificationModule
 
 
 @pytest.fixture

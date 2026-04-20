@@ -7,6 +7,7 @@ import random
 
 import numpy as np
 import torch
+
 from smoke_detection.common.seed import seed_everything
 
 

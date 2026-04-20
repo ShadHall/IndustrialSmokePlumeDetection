@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+
 from smoke_detection.common.paths import segmentation_split
 from smoke_detection.data.segmentation_dataset import (
     SmokePlumeSegmentationDataset,

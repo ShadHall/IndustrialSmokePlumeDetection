@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 import torch
 import torch.nn as nn
+
 from smoke_detection.models.classifier_resnet import build_classifier
 
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+
 from smoke_detection.data.classification_dataset import _pad_to_120
 
 

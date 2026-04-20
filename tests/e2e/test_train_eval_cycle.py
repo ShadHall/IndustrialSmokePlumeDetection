@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+
 from smoke_detection.cli.eval import main as eval_main
 from smoke_detection.cli.train import main as train_main
 

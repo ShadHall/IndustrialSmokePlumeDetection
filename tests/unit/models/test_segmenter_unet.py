@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 import torch
+
 from smoke_detection.models.segmenter_unet import UNet, build_segmenter
 
 

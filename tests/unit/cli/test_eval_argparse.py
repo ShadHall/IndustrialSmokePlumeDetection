@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+
 from smoke_detection.cli import eval as eval_cli
 
 

@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
+
 from smoke_detection.configs.base import OptimConfig, PathsConfig, TrainerConfig
 from smoke_detection.configs.classification import ClassificationConfig
 from smoke_detection.configs.segmentation import SegmentationConfig

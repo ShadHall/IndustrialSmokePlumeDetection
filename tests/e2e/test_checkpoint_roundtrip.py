@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 import torch
+
 from smoke_detection.cli.train import main as train_main
 from smoke_detection.training.classification_module import ClassificationModule
 

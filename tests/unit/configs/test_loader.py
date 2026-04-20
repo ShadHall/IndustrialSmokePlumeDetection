@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+
 from smoke_detection.configs.classification import ClassificationConfig
 from smoke_detection.configs.loader import _apply_dotted_override, _coerce_scalar, load_config
 from smoke_detection.configs.segmentation import SegmentationConfig

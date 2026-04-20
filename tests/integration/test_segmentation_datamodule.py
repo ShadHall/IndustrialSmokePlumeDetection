@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import torch
+
 from smoke_detection.data.segmentation_datamodule import SegmentationDataModule
 
 

@@ -1,4 +1,4 @@
-.PHONY: install lint format test clean train-cls train-seg eval-cls eval-seg
+.PHONY: install lint format test test-e2e test-gpu test-all clean train-cls train-seg eval-cls eval-seg
 
 install:
 	uv sync --extra dev
@@ -12,7 +12,17 @@ format:
 	uv run ruff check --fix .
 
 test:
-	uv run pytest
+	uv run pytest -m "not slow and not e2e and not gpu"
+	uv run pytest -m "slow" --cov-append --cov-fail-under=80
+
+test-e2e:
+	uv run pytest -m "e2e" --timeout=300
+
+test-gpu:
+	uv run pytest -m "gpu"
+
+test-all:
+	uv run pytest -m "not gpu"
 
 CONFIG ?= configs/classification/default.yaml
 CKPT ?=

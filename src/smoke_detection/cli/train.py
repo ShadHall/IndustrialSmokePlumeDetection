@@ -86,6 +86,7 @@ def _build_trainer(cfg: BaseConfig, monitor: str) -> L.Trainer:
         gradient_clip_val=cfg.trainer.gradient_clip_val,
         log_every_n_steps=cfg.trainer.log_every_n_steps,
         fast_dev_run=cfg.trainer.fast_dev_run,
+        default_root_dir=str(cfg.paths.output_dir),
         logger=logger,
         callbacks=[checkpoint_cb, lr_cb],
     )

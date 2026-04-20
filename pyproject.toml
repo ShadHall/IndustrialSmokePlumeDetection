@@ -77,6 +77,16 @@ markers = [
     "gpu: requires CUDA; auto-skipped when unavailable",
     "e2e: end-to-end pipelines (fast_dev_run, CLI, ckpt round-trip)",
 ]
+# Silence environmental warnings that are expected in the test environment:
+#   - CPU accelerator is pinned deliberately (even when CUDA is available).
+#   - num_workers=0 is deliberate for fast test setup.
+#   - Tiny synthetic val batches can be all-negative, producing a torchmetrics
+#     "No positive samples in targets" warning; real runs don't hit this.
+filterwarnings = [
+    "ignore:GPU available but not used:UserWarning",
+    "ignore:.*does not have many workers.*:UserWarning",
+    "ignore:No positive samples in targets.*:UserWarning",
+]
 
 [tool.coverage.run]
 branch = true

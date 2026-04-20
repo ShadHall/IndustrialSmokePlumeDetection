@@ -34,6 +34,7 @@ dev = [
     "pytest-cov>=5.0",
     "pytest-timeout>=2.3",
     "pre-commit>=3.6",
+    "code-review-graph>=2.3",
 ]
 notebooks = [
     "jupyter>=1.0",

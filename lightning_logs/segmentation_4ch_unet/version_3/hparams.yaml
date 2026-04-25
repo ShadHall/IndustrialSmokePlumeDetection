@@ -1,0 +1,12 @@
+batch_size: 16
+bilinear: true
+crop_size: 90
+data_root: !!python/object/apply:pathlib.WindowsPath
+- data
+in_channels: 4
+lr: 0.0001
+momentum: 0.9
+n_classes: 1
+num_workers: 4
+scheduler: plateau
+weight_decay: 0.0

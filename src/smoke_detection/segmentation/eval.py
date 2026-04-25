@@ -22,12 +22,15 @@ from torch.utils.data import DataLoader
 from tqdm.autonotebook import tqdm
 from sklearn.metrics import jaccard_score
 
-from smoke_detection import dataset_paths
-from smoke_detection.segmentation.model import model, device
-from smoke_detection.segmentation.data import create_dataset
+from smoke_detection.common.paths import segmentation_split
+from smoke_detection.models.segmenter_unet import build_segmenter
+from smoke_detection.data.segmentation_dataset import SmokePlumeSegmentationDataset, build_eval_transform
 
 np.random.seed(3)
 torch.manual_seed(3)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = build_segmenter(in_channels=4, n_classes=1).to(device)
 
 _SEG_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -38,10 +41,23 @@ parser.add_argument(
     default=os.path.join(_SEG_DIR, "segmentation_4ch.model"),
     help="Path to 4-channel model checkpoint (.model state_dict)",
 )
+parser.add_argument(
+    "--datadir",
+    type=str,
+    default=None,
+    help="Path to test images directory (default: SMOKEDET_DATA_ROOT/segmentation/test/images)",
+)
+parser.add_argument(
+    "--labeldir",
+    type=str,
+    default=None,
+    help="Path to test labels directory (default: SMOKEDET_DATA_ROOT/segmentation/test/labels)",
+)
 args = parser.parse_args()
 
-te_img, te_lbl = dataset_paths.segmentation_split('test')
-valdata = create_dataset(datadir=te_img, seglabeldir=te_lbl)
+te_img = r"C:\Users\elio3\Downloads\IndustrialSmokePlumeDetection-main\dataset_prepared\segmentation\test\images"
+te_lbl = r"C:\Users\elio3\Downloads\IndustrialSmokePlumeDetection-main\dataset_prepared\segmentation\test\labels"
+valdata = SmokePlumeSegmentationDataset(datadir=te_img, seglabeldir=te_lbl, transform=build_eval_transform())
 
 batch_size = 1
 all_dl = DataLoader(valdata, batch_size=batch_size, shuffle=True)

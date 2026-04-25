@@ -63,8 +63,8 @@ class SmokePlumeDataset(Dataset):
 
         self.imgfiles = np.array(imgfiles)
         self.labels = np.array(labels)
-        self.positive_indices = np.array(positive_indices)
-        self.negative_indices = np.array(negative_indices)
+        self.positive_indices = np.array(positive_indices, dtype=np.intp)
+        self.negative_indices = np.array(negative_indices, dtype=np.intp)
 
         if balance == "downsample":
             self._balance_downsample()
@@ -95,16 +95,20 @@ class SmokePlumeDataset(Dataset):
         self.negative_indices = np.arange(len(self.labels))[self.labels == False]  # noqa: E712
 
     def _balance_upsample(self) -> None:
+        if len(self.positive_indices) == 0 or len(self.negative_indices) == 0:
+            return
+
+        positive_indices = np.asarray(self.positive_indices, dtype=np.intp)
         extra = np.random.randint(
             0,
-            len(self.positive_indices),
-            max(0, len(self.negative_indices) - len(self.positive_indices)),
-        ).astype(int)
-        extra_idc = self.positive_indices[extra]
+            len(positive_indices),
+            max(0, len(self.negative_indices) - len(positive_indices)),
+        ).astype(np.intp)
+        extra_idc = np.asarray(positive_indices[extra], dtype=np.intp)
         self.imgfiles = np.concatenate([self.imgfiles, self.imgfiles[extra_idc]])
         self.labels = np.concatenate([self.labels, self.labels[extra_idc]])
-        self.positive_indices = np.arange(len(self.labels))[self.labels == True]  # noqa: E712
-        self.negative_indices = np.arange(len(self.labels))[self.labels == False]  # noqa: E712
+        self.positive_indices = np.arange(len(self.labels), dtype=np.intp)[self.labels == True]  # noqa: E712
+        self.negative_indices = np.arange(len(self.labels), dtype=np.intp)[self.labels == False]  # noqa: E712
 
     def __getitem__(self, idx: int) -> dict:
         imgfile = rio.open(self.imgfiles[idx])

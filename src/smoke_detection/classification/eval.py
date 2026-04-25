@@ -20,12 +20,14 @@ import torch
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score, roc_curve
 
-from smoke_detection import dataset_paths
-from smoke_detection.classification.model import model, device
-from smoke_detection.classification.data import create_dataset
+from smoke_detection.models.classifier_resnet import build_classifier
+from smoke_detection.data.classification_dataset import SmokePlumeDataset, build_eval_transform
 
 np.random.seed(100)
 torch.manual_seed(100)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = build_classifier(in_channels=4, pretrained=False).to(device)
 
 _CLS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -39,7 +41,11 @@ parser.add_argument(
 args = parser.parse_args()
 
 batch_size = 10
-testdata = create_dataset(datadir=dataset_paths.classification_split('test'))
+testdata = SmokePlumeDataset(
+    datadir=r"C:\Users\elio3\Downloads\IndustrialSmokePlumeDetection-main\dataset_prepared\classification\test",
+    transform=build_eval_transform(),
+    balance="downsample",
+)
 all_dl = DataLoader(testdata, batch_size=batch_size, shuffle=True)
 progress = tqdm(enumerate(all_dl), total=len(all_dl))
 

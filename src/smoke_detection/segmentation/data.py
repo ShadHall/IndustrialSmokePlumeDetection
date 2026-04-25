@@ -35,7 +35,7 @@ from shapely.geometry import Polygon
 import torch
 from torchvision import transforms
 
-from smoke_detection import dataset_paths
+from smoke_detection.common import paths as dataset_paths
 
 torch.manual_seed(3)
 np.random.seed(3)

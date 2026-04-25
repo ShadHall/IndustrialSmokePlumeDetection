@@ -26,7 +26,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-from smoke_detection import dataset_paths
+from smoke_detection.common import paths as dataset_paths
 from smoke_detection.segmentation.model import model, device
 from smoke_detection.segmentation.data import create_dataset
 

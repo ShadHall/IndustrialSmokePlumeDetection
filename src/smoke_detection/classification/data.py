@@ -32,7 +32,7 @@ import rasterio as rio
 import torch
 from torchvision import transforms
 
-from smoke_detection import dataset_paths as _dataset_paths
+from smoke_detection.common import paths as _dataset_paths
 
 # set random seeds
 torch.manual_seed(3)

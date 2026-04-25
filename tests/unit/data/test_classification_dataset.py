@@ -57,6 +57,16 @@ def test_balance_upsample_equalizes_or_grows(train_dir):
     assert n_pos_up >= n_neg_none or n_pos_up >= n_pos_none
 
 
+def test_balance_upsample_casts_indices_to_integer(train_dir):
+    ds = SmokePlumeDataset(datadir=train_dir, balance="none")
+    ds.positive_indices = ds.positive_indices.astype(np.float64)
+
+    ds._balance_upsample()
+
+    assert ds.positive_indices.dtype.kind in {"i", "u"}
+    assert ds.negative_indices.dtype.kind in {"i", "u"}
+
+
 def test_balance_downsample_reduces_length(train_dir):
     none = SmokePlumeDataset(datadir=train_dir, balance="none")
     down = SmokePlumeDataset(datadir=train_dir, balance="downsample")
